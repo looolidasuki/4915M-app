@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sales_user
@@ -15,6 +8,13 @@ namespace Sales_user
         public ViewInternalTransferDetailForm()
         {
             InitializeComponent();
+            Load += ViewInternalTransferDetailForm_Load;
+        }
+
+        private void ViewInternalTransferDetailForm_Load(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = null;
+            CreateFormHelper.WireCancel(button3, this);
         }
     }
 }

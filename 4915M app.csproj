@@ -103,6 +103,22 @@
     <Compile Include="ConfirmRefundForm.Designer.cs">
       <DependentUpon>ConfirmRefundForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\DeliveryNoteController.cs" />
+    <Compile Include="Controllers\GoodsReceivedNoteController.cs" />
+    <Compile Include="Controllers\InvoiceController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ProductionOrderController.cs" />
+    <Compile Include="Controllers\PurchaseOrderController.cs" />
+    <Compile Include="Controllers\QuotationController.cs" />
+    <Compile Include="Controllers\RawMaterialController.cs" />
+    <Compile Include="Controllers\RawMaterialRequestNoteController.cs" />
+    <Compile Include="Controllers\RefundRequestController.cs" />
+    <Compile Include="Controllers\SalesOrderController.cs" />
+    <Compile Include="Controllers\StaffController.cs" />
+    <Compile Include="Controllers\SupplierController.cs" />
+    <Compile Include="Controllers\SystemDictionaryController.cs" />
+    <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="CreateDeliveryNoteForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -175,6 +191,11 @@
     <Compile Include="CreateWareHouserForm.Designer.cs">
       <DependentUpon>CreateWareHouserForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AppDefaults.cs" />
+    <Compile Include="CreateFormHelper.cs" />
+    <Compile Include="DatabaseConnect.cs" />
+    <Compile Include="FormGridHelper.cs" />
+    <Compile Include="InputPrompt.cs" />
     <Compile Include="MainMenuForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -211,6 +232,23 @@
     <Compile Include="LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Currency.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\DeliveryNote.cs" />
+    <Compile Include="Models\GoodsReceivedNote.cs" />
+    <Compile Include="Models\Invoice.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\ProductionOrder.cs" />
+    <Compile Include="Models\PurchaseOrder.cs" />
+    <Compile Include="Models\Quotation.cs" />
+    <Compile Include="Models\RawMaterial.cs" />
+    <Compile Include="Models\RawMaterialRequestNote.cs" />
+    <Compile Include="Models\RefundRequest.cs" />
+    <Compile Include="Models\SalesOrder.cs" />
+    <Compile Include="Models\Staff.cs" />
+    <Compile Include="Models\Supplier.cs" />
+    <Compile Include="Models\SystemDictionary.cs" />
+    <Compile Include="Models\Warehouse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewCustomerDetailForm.cs">
