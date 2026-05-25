@@ -9,6 +9,8 @@ namespace Sales_user
     {
         private readonly InvoiceController _controller = new InvoiceController();
         private readonly long? _invoiceId;
+        private long _recordId;
+        private ViewDetailEditHelper _editHelper;
 
         public ViewInvoiceDetailForm(long? invoiceId = null)
         {
@@ -19,18 +21,41 @@ namespace Sales_user
 
         private void ViewInvoiceDetailForm_Load(object sender, EventArgs e)
         {
-            DataTable list = _controller.GetAllInvoices();
-            if (list == null || list.Rows.Count == 0) return;
-            foreach (DataRow row in list.Rows)
+            var list = _controller.GetAllInvoices();
+            _recordId = ViewDetailLoader.ResolveRecordId(_invoiceId, list, "Invoice ID", 0);
+            LoadRecord();
+
+            _editHelper = new ViewDetailEditHelper(
+                new Control[] { textBox5, textBox6, textBox10 },
+                button1, button2, button3,
+                SaveRecord, LoadRecord);
+            _editHelper.Initialize();
+        }
+
+        private void LoadRecord()
+        {
+            DataTable dt = DatabaseConnect.ExecuteQuery(
+                "SELECT status, invoiceType, staffID FROM Invoice WHERE invoiceID = @id",
+                new MySql.Data.MySqlClient.MySqlParameter[] {
+                    new MySql.Data.MySqlClient.MySqlParameter("@id", _recordId)
+                });
+            if (dt != null && dt.Rows.Count > 0)
             {
-                if (_invoiceId.HasValue && Convert.ToInt64(row["Invoice ID"]) != _invoiceId.Value) continue;
-                long id = Convert.ToInt64(row["Invoice ID"]);
-                textBox5.Text = row["Status"].ToString();
-                textBox6.Text = row["Invoice Type"].ToString();
-                FormGridHelper.BindReadOnly(dataGridView1, _controller.GetInvoiceLines(id));
-                break;
+                textBox5.Text = dt.Rows[0]["status"].ToString();
+                textBox6.Text = dt.Rows[0]["invoiceType"].ToString();
+                textBox10.Text = dt.Rows[0]["staffID"].ToString();
             }
-            CreateFormHelper.WireCancel(button3, this);
+            FormGridHelper.BindReadOnly(dataGridView1, _controller.GetInvoiceLines(_recordId));
+        }
+
+        private bool SaveRecord()
+        {
+            if (!int.TryParse(textBox5.Text, out int status)) status = 0;
+            if (!int.TryParse(textBox6.Text, out int type)) type = 1;
+            bool ok = EntityUpdateController.UpdateInvoice(_recordId, status, type);
+            ViewDetailLoader.ShowSavedMessage(ok, "Invoice");
+            if (ok) DialogResult = DialogResult.OK;
+            return ok;
         }
     }
 }

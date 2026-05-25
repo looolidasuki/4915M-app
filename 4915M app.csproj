@@ -194,8 +194,15 @@
     <Compile Include="AppDefaults.cs" />
     <Compile Include="CreateFormHelper.cs" />
     <Compile Include="DatabaseConnect.cs" />
+    <Compile Include="EntitySearchController.cs" />
+    <Compile Include="EntityUpdateController.cs" />
     <Compile Include="FormGridHelper.cs" />
     <Compile Include="InputPrompt.cs" />
+    <Compile Include="MainMenuSearchService.cs" />
+    <Compile Include="SearchFilterCriteria.cs" />
+    <Compile Include="SearchQueryHelper.cs" />
+    <Compile Include="ViewDetailEditHelper.cs" />
+    <Compile Include="ViewDetailLoader.cs" />
     <Compile Include="MainMenuForm.cs">
       <SubType>Form</SubType>
     </Compile>

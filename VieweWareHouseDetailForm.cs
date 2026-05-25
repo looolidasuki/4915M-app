@@ -1,4 +1,5 @@
 ﻿using Sales_user.Controllers;
+using Sales_user.Models;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -9,6 +10,8 @@ namespace Sales_user
     {
         private readonly WarehouseController _controller = new WarehouseController();
         private readonly long? _warehouseId;
+        private long _recordId;
+        private ViewDetailEditHelper _editHelper;
 
         public VieweWareHouseDetailForm(long? warehouseId = null)
         {
@@ -19,18 +22,43 @@ namespace Sales_user
 
         private void VieweWareHouseDetailForm_Load(object sender, EventArgs e)
         {
-            DataTable list = _controller.GetAllWarehouses();
-            if (list == null || list.Rows.Count == 0) return;
-            foreach (DataRow row in list.Rows)
+            var list = _controller.GetAllWarehouses();
+            _recordId = ViewDetailLoader.ResolveRecordId(_warehouseId, list, "Warehouse ID", AppDefaults.WarehouseId);
+            LoadRecord();
+
+            _editHelper = new ViewDetailEditHelper(
+                new Control[] { textBox28, textBox29 },
+                button1, button2, button3,
+                SaveRecord, LoadRecord);
+            _editHelper.Initialize();
+        }
+
+        private void LoadRecord()
+        {
+            DataTable dt = DatabaseConnect.ExecuteQuery(
+                "SELECT warehouseName, warehouseAddress FROM Warehouse WHERE warehouseID = @id",
+                new MySql.Data.MySqlClient.MySqlParameter[] {
+                    new MySql.Data.MySqlClient.MySqlParameter("@id", _recordId)
+                });
+            if (dt != null && dt.Rows.Count > 0)
             {
-                if (_warehouseId.HasValue && Convert.ToInt64(row["Warehouse ID"]) != _warehouseId.Value) continue;
-                long id = Convert.ToInt64(row["Warehouse ID"]);
-                textBox28.Text = row["Warehouse Name"].ToString();
-                textBox29.Text = row["Address"].ToString();
-                FormGridHelper.BindReadOnly(dataGridView1, _controller.GetWarehouseProducts(id));
-                break;
+                textBox28.Text = dt.Rows[0]["warehouseName"].ToString();
+                textBox29.Text = dt.Rows[0]["warehouseAddress"].ToString();
             }
-            CreateFormHelper.WireCancel(button3, this);
+            FormGridHelper.BindReadOnly(dataGridView1, _controller.GetWarehouseProducts(_recordId));
+        }
+
+        private bool SaveRecord()
+        {
+            bool ok = EntityUpdateController.UpdateWarehouse(new Warehouse
+            {
+                WarehouseID = _recordId,
+                WarehouseName = textBox28.Text.Trim(),
+                WarehouseAddress = textBox29.Text.Trim()
+            });
+            ViewDetailLoader.ShowSavedMessage(ok, "Warehouse");
+            if (ok) DialogResult = DialogResult.OK;
+            return ok;
         }
     }
 }

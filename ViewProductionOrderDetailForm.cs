@@ -9,6 +9,8 @@ namespace Sales_user
     {
         private readonly ProductionOrderController _controller = new ProductionOrderController();
         private readonly long? _productionOrderId;
+        private long _recordId;
+        private ViewDetailEditHelper _editHelper;
 
         public ViewProductionOrderDetailForm(long? productionOrderId = null)
         {
@@ -19,18 +21,40 @@ namespace Sales_user
 
         private void ViewProductionOrderDetailForm_Load(object sender, EventArgs e)
         {
-            DataTable list = _controller.GetAllProductionOrders();
-            if (list == null || list.Rows.Count == 0) return;
-            foreach (DataRow row in list.Rows)
+            var list = _controller.GetAllProductionOrders();
+            _recordId = ViewDetailLoader.ResolveRecordId(_productionOrderId, list, "Production Order ID", 0);
+            LoadRecord();
+
+            _editHelper = new ViewDetailEditHelper(
+                new Control[] { textBox26, textBox25, comboBox5 },
+                button1, button2, button3,
+                SaveRecord, LoadRecord);
+            _editHelper.Initialize();
+        }
+
+        private void LoadRecord()
+        {
+            DataTable dt = DatabaseConnect.ExecuteQuery(
+                "SELECT productionOrderCode, salesOrderID, status, remark FROM ProductionOrder WHERE productionOrderID = @id",
+                new MySql.Data.MySqlClient.MySqlParameter[] {
+                    new MySql.Data.MySqlClient.MySqlParameter("@id", _recordId)
+                });
+            if (dt != null && dt.Rows.Count > 0)
             {
-                if (_productionOrderId.HasValue && Convert.ToInt64(row["Production Order ID"]) != _productionOrderId.Value) continue;
-                long id = Convert.ToInt64(row["Production Order ID"]);
-                textBox26.Text = row["Production Order Code"].ToString();
-                textBox25.Text = row["Sales Order ID"].ToString();
-                FormGridHelper.BindReadOnly(dataGridView1, _controller.GetProductLines(id));
-                break;
+                textBox26.Text = dt.Rows[0]["productionOrderCode"].ToString();
+                textBox25.Text = dt.Rows[0]["salesOrderID"].ToString();
+                comboBox5.Text = dt.Rows[0]["status"].ToString();
             }
-            CreateFormHelper.WireCancel(button3, this);
+            FormGridHelper.BindReadOnly(dataGridView1, _controller.GetProductLines(_recordId));
+        }
+
+        private bool SaveRecord()
+        {
+            if (!int.TryParse(comboBox5.Text, out int status)) status = 0;
+            bool ok = EntityUpdateController.UpdateProductionOrder(_recordId, status, "");
+            ViewDetailLoader.ShowSavedMessage(ok, "Production Order");
+            if (ok) DialogResult = DialogResult.OK;
+            return ok;
         }
     }
 }

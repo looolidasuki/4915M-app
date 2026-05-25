@@ -1,5 +1,6 @@
 using MySql.Data.MySqlClient;
 using Sales_user.Models;
+using System.Collections.Generic;
 using System.Data;
 
 namespace Sales_user.Controllers
@@ -73,6 +74,26 @@ namespace Sales_user.Controllers
             string sql = @"SELECT quotationCode AS 'Quotation Code', createDate AS 'Create Date', status AS 'Status'
                            FROM Quotation WHERE customerID = @id ORDER BY createDate DESC";
             return DatabaseConnect.ExecuteQuery(sql, new[] { new MySqlParameter("@id", customerId) });
+        }
+
+        public DataTable Search(SearchFilterCriteria filter)
+        {
+            string sql = @"SELECT customerID AS 'Customer ID',
+                                  customerName AS 'Customer Name',
+                                  billingAddress AS 'Billing Address',
+                                  paymentTerm AS 'Payment Term',
+                                  createDate AS 'Create Date',
+                                  lastModifyDate AS 'Last Modify Date'
+                           FROM Customer WHERE 1=1";
+            var conditions = new List<string>();
+            var parameters = new List<MySqlParameter>();
+            SearchQueryHelper.AddLike(conditions, parameters, "customerName", filter.Name ?? filter.Keyword, "@name");
+            SearchQueryHelper.AddLike(conditions, parameters, "billingAddress", filter.Keyword, "@addr");
+            SearchQueryHelper.AddDateFrom(conditions, parameters, "createDate", filter.FromDate);
+            SearchQueryHelper.AddDateTo(conditions, parameters, "createDate", filter.ToDate);
+            if (conditions.Count > 0) sql += " AND " + string.Join(" AND ", conditions);
+            sql += " ORDER BY createDate DESC";
+            return DatabaseConnect.ExecuteQuery(sql, parameters.ToArray());
         }
     }
 }

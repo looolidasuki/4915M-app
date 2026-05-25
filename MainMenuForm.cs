@@ -101,7 +101,220 @@ namespace Sales_user
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            tcMainMenu_SelectedIndexChanged(tcMainMenu, EventArgs.Empty);
+            InitializeSearchFilters();
+            LoadCurrentTabData();
+        }
+
+        private void InitializeSearchFilters()
+        {
+            WireSearchBox(textBox1);
+            WireSearchBox(textBox2);
+            WireSearchBox(textBox3);
+            WireSearchBox(textBox7);
+            WireSearchBox(textBox8);
+            WireSearchBox(textBox9);
+            WireSearchBox(textBox10);
+            WireSearchBox(textBox17);
+            WireSearchBox(textBox18);
+            WireSearchBox(textBox19);
+            WireSearchBox(textBox20);
+            WireSearchBox(textBox21);
+            WireSearchBox(textBox22);
+            WireSearchBox(textBox23);
+            WireSearchBox(textBox24);
+            WireSearchBox(textBox25);
+            WireSearchBox(textBox26);
+            WireSearchBox(textBox27);
+            WireSearchBox(textBox28);
+            WireSearchBox(textBox29);
+            WireSearchBox(textBox30);
+            WireSearchBox(textBox31);
+            WireSearchBox(textBox32);
+            WireSearchBox(textBox33);
+            WireSearchBox(textBox34);
+            WireSearchBox(textBox35);
+            WireSearchBox(textBox36);
+            WireSearchBox(textBox37);
+            WireSearchBox(textBox38);
+            WireSearchBox(textBox39);
+            WireSearchBox(textBox40);
+            WireSearchBox(textBox41);
+            WireSearchBox(textBox42);
+            WireSearchBox(textBox43);
+            WireSearchBox(txtRawMaterialCode);
+            WireSearchBox(txtColor);
+            WireSearchBox(txtSize);
+            WireSearchBox(txtPurchasesOrder);
+
+            WireFilterControl(dateTimePicker4);
+            WireFilterControl(dateTimePicker5);
+            WireFilterControl(dateTimePicker6);
+            WireFilterControl(dateTimePicker7);
+            WireFilterControl(dateTimePicker8);
+            WireFilterControl(dateTimePicker9);
+            WireFilterControl(dateTimePicker10);
+            WireFilterControl(dateTimePicker11);
+            WireFilterControl(dateTimePicker12);
+            WireFilterControl(dateTimePicker13);
+            WireFilterControl(dateTimePicker14);
+            WireFilterControl(dateTimePicker15);
+            WireFilterControl(dateTimePicker16);
+            WireFilterControl(dateTimePicker17);
+            WireFilterControl(dateTimePicker2);
+            WireFilterControl(dateTimePicker3);
+            WireFilterControl(dtpRequestDeliveryDate);
+
+            WireFilterControl(comboBox3);
+            WireFilterControl(comboBox4);
+            WireFilterControl(comboBox5);
+            WireFilterControl(comboBox6);
+            WireFilterControl(comboBox9);
+            WireFilterControl(cbStatus);
+            WireFilterControl(cbCategory);
+        }
+
+        private void WireSearchBox(TextBox box)
+        {
+            if (box == null) return;
+            box.KeyDown += SearchBox_KeyDown;
+        }
+
+        private void WireFilterControl(Control control)
+        {
+            if (control == null) return;
+            if (control is DateTimePicker dtp)
+                dtp.ValueChanged += (s, e) => ApplyCurrentTabSearch();
+            else if (control is ComboBox cb)
+                cb.SelectedIndexChanged += (s, e) => ApplyCurrentTabSearch();
+        }
+
+        private void SearchBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                ApplyCurrentTabSearch();
+            }
+        }
+
+        private SearchFilterCriteria BuildSearchCriteria()
+        {
+            if (tcMainMenu.SelectedTab == null) return new SearchFilterCriteria();
+            string tab = tcMainMenu.SelectedTab.Text.Trim();
+            var c = new SearchFilterCriteria();
+
+            switch (tab)
+            {
+                case "Sales Order":
+                    c.Keyword = textBox1.Text;
+                    c.FromDate = dateTimePicker5.Value;
+                    c.ToDate = dateTimePicker4.Value;
+                    c.Status = SearchQueryHelper.ParseStatusCombo(comboBox3.Text);
+                    break;
+                case "Quotation":
+                    c.Keyword = textBox2.Text;
+                    c.FromDate = dateTimePicker7.Value;
+                    c.ToDate = dateTimePicker6.Value;
+                    c.Status = SearchQueryHelper.ParseStatusCombo(comboBox4.Text);
+                    break;
+                case "Customer":
+                    c.Name = textBox3.Text;
+                    c.Phone = textBox7.Text;
+                    c.Email = textBox8.Text;
+                    c.FromDate = dateTimePicker8.Value;
+                    c.ToDate = dateTimePicker8.Value;
+                    break;
+                case "Invoice":
+                    c.Keyword = textBox9.Text;
+                    c.FromDate = dateTimePicker9.Value;
+                    c.ToDate = dateTimePicker9.Value;
+                    break;
+                case "Delivery Note":
+                    c.Keyword = textBox10.Text;
+                    c.FromDate = dateTimePicker10.Value;
+                    c.ToDate = dateTimePicker10.Value;
+                    break;
+                case "Purchases Order":
+                    c.Keyword = txtPurchasesOrder.Text;
+                    c.FromDate = dateTimePicker2.Value;
+                    c.ToDate = dtpRequestDeliveryDate.Value;
+                    break;
+                case "Raw Material Request Note":
+                    c.Keyword = textBox19.Text;
+                    c.FromDate = dateTimePicker11.Value;
+                    c.ToDate = dateTimePicker12.Value;
+                    break;
+                case "Product":
+                    c.Keyword = textBox20.Text;
+                    c.Category = textBox21.Text;
+                    c.StyleNumber = textBox22.Text;
+                    c.Color = textBox23.Text;
+                    c.Unit = textBox24.Text;
+                    c.Size = textBox17.Text;
+                    break;
+                case "Production Order":
+                    c.Keyword = textBox25.Text;
+                    c.FromDate = dateTimePicker3.Value;
+                    c.ToDate = dateTimePicker13.Value;
+                    c.Status = SearchQueryHelper.ParseStatusCombo(comboBox5.Text);
+                    break;
+                case "Ware house":
+                    c.Keyword = textBox27.Text;
+                    c.Name = textBox28.Text;
+                    break;
+                case "Goods Recipt Note":
+                    c.Keyword = textBox30.Text;
+                    c.FromDate = dateTimePicker15.Value;
+                    c.ToDate = dateTimePicker15.Value;
+                    break;
+                case "Supplier":
+                    c.Keyword = textBox36.Text;
+                    c.Name = textBox35.Text;
+                    c.Phone = textBox37.Text;
+                    c.Email = textBox38.Text;
+                    break;
+                case "Refund":
+                    c.Keyword = textBox43.Text;
+                    c.FromDate = dateTimePicker17.Value;
+                    c.ToDate = dateTimePicker16.Value;
+                    c.Status = SearchQueryHelper.ParseStatusCombo(comboBox9.Text);
+                    break;
+                case "User Management":
+                    c.Name = textBox41.Text;
+                    c.Email = textBox40.Text;
+                    c.Phone = textBox39.Text;
+                    c.FromDate = dateTimePicker14.Value;
+                    break;
+                case "Raw Material":
+                    c.Keyword = txtRawMaterialCode.Text;
+                    c.Color = txtColor.Text;
+                    c.Size = txtSize.Text;
+                    c.Category = cbCategory.Text;
+                    if (int.TryParse(cbStatus.Text, out int rmStatus)) c.Status = rmStatus;
+                    break;
+            }
+            return c;
+        }
+
+        private void LoadCurrentTabData()
+        {
+            if (tcMainMenu.SelectedTab == null) return;
+            string tab = tcMainMenu.SelectedTab.Text.Trim();
+            DataGridView grid = GetActiveTabGrid();
+            if (grid == null) return;
+            DataTable data = MainMenuSearchService.LoadAll(tab);
+            BindDataGridView(grid, data);
+        }
+
+        private void ApplyCurrentTabSearch()
+        {
+            if (tcMainMenu.SelectedTab == null) return;
+            string tab = tcMainMenu.SelectedTab.Text.Trim();
+            DataGridView grid = GetActiveTabGrid();
+            if (grid == null) return;
+            SearchFilterCriteria criteria = BuildSearchCriteria();
+            DataTable data = EntitySearchController.Search(tab, criteria);
+            BindDataGridView(grid, data);
         }
 
         private void tabPage4_Click(object sender, EventArgs e)
@@ -265,82 +478,7 @@ namespace Sales_user
                 TabControl mainTabControl = sender as TabControl ?? tcMainMenu;
                 if (mainTabControl?.SelectedTab == null) return;
 
-                string selectedTabName = mainTabControl.SelectedTab.Text.Trim();
-                DataTable data = null;
-                DataGridView grid = null;
-
-                switch (selectedTabName)
-                {
-                    case "Sales Order":
-                        grid = dataGridView1;
-                        data = new SalesOrderController().GetAllSalesOrders();
-                        break;
-                    case "Quotation":
-                        grid = dataGridView2;
-                        data = new QuotationController().GetAllQuotations();
-                        break;
-                    case "Customer":
-                        grid = dataGridView3;
-                        data = new CustomerController().GetAllCustomers();
-                        break;
-                    case "Invoice":
-                        grid = dataGridView5;
-                        data = new InvoiceController().GetAllInvoices();
-                        break;
-                    case "Delivery Note":
-                        grid = dataGridView6;
-                        data = new DeliveryNoteController().GetAllDeliveryNotes();
-                        break;
-                    case "Purchases Order":
-                        grid = dgvPurchaseOrderOrderLine;
-                        data = new PurchaseOrderController().GetAllPurchaseOrders();
-                        break;
-                    case "Raw Material Request Note":
-                        grid = dataGridView7;
-                        data = new RawMaterialRequestNoteController().GetAllRequestNotes();
-                        break;
-                    case "Product":
-                        grid = dataGridView8;
-                        data = new ProductController().GetAllProducts();
-                        break;
-                    case "Internal Transfer":
-                        grid = dgvProductLine;
-                        data = null;
-                        break;
-                    case "Raw Material":
-                        grid = dgvRawMaterialSupplierQuote;
-                        data = new RawMaterialController().GetAllRawMaterials();
-                        break;
-                    case "Production Order":
-                        grid = dataGridView4;
-                        data = new ProductionOrderController().GetAllProductionOrders();
-                        break;
-                    case "Ware house":
-                        grid = dataGridView9;
-                        data = new WarehouseController().GetAllWarehouses();
-                        break;
-                    case "Goods Recipt Note":
-                        grid = dataGridView10;
-                        data = new GoodsReceivedNoteController().GetAllGoodsReceivedNotes();
-                        break;
-                    case "Supplier":
-                        grid = dataGridView11;
-                        data = new SupplierController().GetAllSuppliers();
-                        break;
-                    case "Refund":
-                        grid = dataGridView13;
-                        data = new RefundRequestController().GetAllRefundRequests();
-                        break;
-                    case "User Management":
-                        grid = dataGridView12;
-                        data = new StaffController().GetAllStaff();
-                        break;
-                }
-
-                if (grid != null)
-                {
-                    BindDataGridView(grid, data);
-                }
+                LoadCurrentTabData();
             }
             catch (Exception ex)
             {
